@@ -22,6 +22,9 @@ class RTCDesktopDeviceImpl : public RTCDesktopDevice {
   scoped_refptr<RTCDesktopCapturer> CreateDesktopCapturer(
       scoped_refptr<MediaSource> source, bool showCursor = true) override;
 
+  scoped_refptr<RTCDesktopCapturer> CreateDesktopCapturer(
+      DesktopType type, bool showCursor = true) override;
+
   scoped_refptr<RTCDesktopMediaList> GetDesktopMediaList(
       DesktopType type) override;
 

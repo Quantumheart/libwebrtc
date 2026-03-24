@@ -20,6 +20,12 @@ scoped_refptr<RTCDesktopCapturer> RTCDesktopDeviceImpl::CreateDesktopCapturer(
       showCursor);
 }
 
+scoped_refptr<RTCDesktopCapturer> RTCDesktopDeviceImpl::CreateDesktopCapturer(
+    DesktopType type, bool showCursor) {
+  return new RefCountedObject<RTCDesktopCapturerImpl>(
+      type, -1, signaling_thread_, nullptr, showCursor);
+}
+
 scoped_refptr<RTCDesktopMediaList> RTCDesktopDeviceImpl::GetDesktopMediaList(
     DesktopType type) {
   if (desktop_media_lists_.find(type) == desktop_media_lists_.end()) {

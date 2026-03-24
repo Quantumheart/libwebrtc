@@ -22,6 +22,9 @@
 #ifdef WEBRTC_WIN
 #include "modules/desktop_capture/win/window_capture_utils.h"
 #endif
+#ifdef WEBRTC_LINUX
+#include "modules/desktop_capture/linux/wayland/base_capturer_pipewire.h"
+#endif
 
 namespace libwebrtc {
 
@@ -44,11 +47,17 @@ RTCDesktopCapturerImpl::RTCDesktopCapturerImpl(
   options_.set_allow_directx_capturer(true);
 #endif
 #ifdef WEBRTC_LINUX
-  if (type == kScreen) {
-    options_.set_allow_pipewire(true);
-  }
+  options_.set_allow_pipewire(true);
 #endif
   thread_->BlockingCall([this, type, showCursor] {
+#ifdef WEBRTC_LINUX
+    if (options_.allow_pipewire() && webrtc::DesktopCapturer::IsRunningUnderWayland()) {
+      capturer_ = std::make_unique<webrtc::DesktopAndCursorComposer>(
+          std::make_unique<webrtc::BaseCapturerPipeWire>(
+              options_, webrtc::CaptureType::kAnyScreenContent),
+          options_);
+    } else
+#endif
     if (type == kScreen) {
       if (showCursor) {
         capturer_ = std::make_unique<webrtc::DesktopAndCursorComposer>(
